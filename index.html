@@ -1,0 +1,620 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' https://cdn.plot.ly 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self'; connect-src 'self'">
+    <meta http-equiv="X-Content-Type-Options" content="nosniff">
+    <meta http-equiv="X-Frame-Options" content="DENY">
+    <meta http-equiv="X-XSS-Protection" content="1; mode=block">
+    <title>第二章 - 基础图表数据可视化平台</title>
+    
+    <!-- 性能优化：预加载关键资源 -->
+    <link rel="preconnect" href="https://cdn.plot.ly">
+    <link rel="dns-prefetch" href="https://cdn.plot.ly">
+    <link rel="preload" as="script" href="https://cdn.plot.ly/plotly-latest.min.js">
+    
+    <!-- 压缩后的CSS -->
+    <style>
+        *{margin:0;padding:0;box-sizing:border-box}body{font-family:'Microsoft YaHei',Arial,sans-serif;background:linear-gradient(135deg,#667eea 0%,#764ba2 100%);min-height:100vh;padding:20px}.container{max-width:1200px;margin:0 auto;background:#fff;border-radius:15px;box-shadow:0 20px 40px rgba(0,0,0,.1);overflow:hidden}.header{background:linear-gradient(45deg,#2c3e50,#34495e);color:#fff;padding:30px;text-align:center}.header h1{font-size:2.5em;margin-bottom:10px;text-shadow:2px 2px 4px rgba(0,0,0,.3)}.header p{font-size:1.2em;opacity:.9}.nav{background:#ecf0f1;padding:15px;display:flex;justify-content:center;gap:10px;flex-wrap:wrap}.nav-btn{background:#3498db;color:#fff;border:none;padding:12px 24px;border-radius:25px;cursor:pointer;font-size:1em;transition:all .3s ease;box-shadow:0 4px 15px rgba(52,152,219,.3)}.nav-btn:hover{background:#2980b9;transform:translateY(-2px);box-shadow:0 6px 20px rgba(52,152,219,.4)}.nav-btn.active{background:#e74c3c;box-shadow:0 4px 15px rgba(231,76,60,.3)}.content{padding:30px;min-height:600px}.chart-container{background:#f8f9fa;border-radius:10px;padding:20px;margin-bottom:30px;box-shadow:0 5px 15px rgba(0,0,0,.1)}.chart-title{font-size:1.5em;color:#2c3e50;margin-bottom:15px;text-align:center;font-weight:bold}.chart-description{color:#7f8c8d;text-align:center;margin-bottom:20px;line-height:1.6}.chart{height:400px;background:#fff;border-radius:8px;box-shadow:0 2px 10px rgba(0,0,0,.1)}.chart-grid{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px}.chart-item{background:#fff;border-radius:8px;padding:15px;box-shadow:0 2px 10px rgba(0,0,0,.1)}.footer{background:#2c3e50;color:#fff;text-align:center;padding:20px;margin-top:30px}@media (max-width:768px){.chart-grid{grid-template-columns:1fr}.nav{flex-direction:column;align-items:center}.nav-btn{width:200px}}.loading{text-align:center;padding:20px;color:#666}.error{background:#f8d7da;color:#721c24;padding:15px;border-radius:5px;margin:10px 0;text-align:center}
+    </style>
+</head>
+<body>
+    <!-- 错误容器 -->
+    <div id="error-container"></div>
+    
+    <!-- 加载状态 -->
+    <div id="loading" class="loading">
+        <p>正在加载基础图表可视化平台...</p>
+    </div>
+
+    <div class="container" style="display:none" id="main-content">
+        <div class="header">
+            <h1>第二章 - 基础图表数据可视化平台</h1>
+            <p>折线图、柱形图、饼图、散点图等基础可视化技术</p>
+        </div>
+        
+        <div class="nav">
+            <button class="nav-btn active" onclick="showSection('section1')">折线图与面积图</button>
+            <button class="nav-btn" onclick="showSection('section2')">柱形图与条形图</button>
+            <button class="nav-btn" onclick="showSection('section3')">饼图与圆环图</button>
+            <button class="nav-btn" onclick="showSection('section4')">散点图与气泡图</button>
+            <button class="nav-btn" onclick="showSection('section5')">箱形图与误差棒图</button>
+        </div>
+        
+        <div class="content">
+            <!-- 折线图与面积图 -->
+            <div id="section1" class="chart-section">
+                <div class="chart-container">
+                    <div class="chart-title">气温变化与物流费用分析</div>
+                    <div class="chart-description">
+                        展示未来15天气温变化趋势和物流公司费用统计的堆积面积图
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-item">
+                            <div id="temperature-chart" style="height: 300px;"></div>
+                        </div>
+                        <div class="chart-item">
+                            <div id="logistics-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 柱形图与条形图 -->
+            <div id="section2" class="chart-section" style="display: none;">
+                <div class="chart-container">
+                    <div class="chart-title">电商数据与网购替代率分析</div>
+                    <div class="chart-description">
+                        展示阿里巴巴GMV数据和各商品种类网购替代率的对比分析
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-item">
+                            <div id="alibaba-chart" style="height: 300px;"></div>
+                        </div>
+                        <div class="chart-item">
+                            <div id="shopping-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 饼图与圆环图 -->
+            <div id="section3" class="chart-section" style="display: none;">
+                <div class="chart-container">
+                    <div class="chart-title">消费分布与职业兴趣分析</div>
+                    <div class="chart-description">
+                        支付宝月账单消费分布和霍兰德职业兴趣测试的雷达图展示
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-item">
+                            <div id="alipay-chart" style="height: 300px;"></div>
+                        </div>
+                        <div class="chart-item">
+                            <div id="holland-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 散点图与气泡图 -->
+            <div id="section4" class="chart-section" style="display: none;">
+                <div class="chart-container">
+                    <div class="chart-title">速度距离关系与随机分布</div>
+                    <div class="chart-description">
+                        汽车速度与制动距离的关系分析及随机数据的散点图展示
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-item">
+                            <div id="car-speed-chart" style="height: 300px;"></div>
+                        </div>
+                        <div class="chart-item">
+                            <div id="random-scatter-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- 箱形图与误差棒图 -->
+            <div id="section5" class="chart-section" style="display: none;">
+                <div class="chart-container">
+                    <div class="chart-title">发电量统计与生物量分析</div>
+                    <div class="chart-description">
+                        全国发电量箱形图对比和树种生物量误差棒图分析
+                    </div>
+                    <div class="chart-grid">
+                        <div class="chart-item">
+                            <div id="electricity-chart" style="height: 300px;"></div>
+                        </div>
+                        <div class="chart-item">
+                            <div id="biomass-chart" style="height: 300px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>基于第二章内容构建的基础图表可视化平台 | 安全加固 & 性能优化版本</p>
+        </div>
+    </div>
+
+    <!-- 延迟加载Plotly库 -->
+    <script>
+        // 性能监控开始
+        window.performanceMark = function(markName) {
+            if ('performance' in window) {
+                performance.mark(markName);
+            }
+        };
+        
+        // 安全验证函数
+        window.sanitizeInput = function(input) {
+            if (typeof input !== 'string') return '';
+            return input.replace(/[<>"'&]/g, function(match) {
+                return {
+                    '<': '<',
+                    '>': '>',
+                    '"': '"',
+                    "'": '&#x27;',
+                    '&': '&'
+                }[match];
+            });
+        };
+        
+        // 错误处理
+        window.handleError = function(error, context) {
+            console.error('Error in', context, error);
+            const errorDiv = document.getElementById('error-container');
+            if (errorDiv) {
+                errorDiv.innerHTML = '<div class="error">系统暂时不可用，请稍后重试</div>';
+            }
+        };
+
+        // 安全数据配置
+        const secureData = Object.freeze({
+            // 气温数据
+            temperature: Object.freeze({
+                days: Object.freeze([4,5,6,7,8,9,10,11,12,13,14,15,16,17,18]),
+                maxTemp: Object.freeze([32,33,34,34,33,31,30,29,30,29,26,23,21,25,31]),
+                minTemp: Object.freeze([19,19,20,22,22,21,22,16,18,18,17,14,15,16,16])
+            }),
+            
+            // 物流费用数据
+            logistics: Object.freeze({
+                months: Object.freeze([1,2,3,4,5,6,7,8,9,10,11,12]),
+                companyA: Object.freeze([198,215,245,222,200,236,201,253,236,200,266,290]),
+                companyB: Object.freeze([203,236,200,236,269,216,298,333,301,349,360,368]),
+                companyC: Object.freeze([185,205,226,199,238,200,250,209,246,219,253,288])
+            }),
+            
+            // 阿里巴巴GMV数据
+            alibaba: Object.freeze({
+                years: Object.freeze(["FY2013","FY2014","FY2015","FY2016","FY2017","FY2018","FY2019"]),
+                gmv: Object.freeze([10770,16780,24440,30920,37670,48200,57270])
+            }),
+            
+            // 网购替代率数据
+            shopping: Object.freeze({
+                categories: Object.freeze([
+                    "家政、家教、保姆等生活服务", "飞机票、火车票", "家具", "手机、手机配件",
+                    "计算机及其配套产品", "汽车用品", "通信充值、游戏充值", "个人护理用品",
+                    "书报杂志及音像制品", "餐饮、旅游、住宿", "家用电器",
+                    "食品、饮料、烟酒、保健品", "家庭日杂用品", "保险、演出票务",
+                    "服装、鞋帽、家用纺织品", "数码产品", "其他商品和服务", "工艺品、收藏品"
+                ]),
+                rates: Object.freeze([0.959,0.951,0.935,0.924,0.893,0.892,0.865,0.863,0.860,0.856,0.854,0.835,0.826,0.816,0.798,0.765,0.763,0.67])
+            }),
+            
+            // 支付宝账单数据
+            alipay: Object.freeze({
+                categories: Object.freeze(['购物','人情往来','餐饮美食','通信物流','生活日用','交通出行','休闲娱乐','其他']),
+                amounts: Object.freeze([800,100,1000,200,300,200,200,200])
+            }),
+            
+            // 霍兰德职业兴趣数据
+            holland: Object.freeze({
+                dimensions: Object.freeze(['研究型(I)','艺术型(A)','社会型(S)','企业型(E)','传统型(C)','现实型(R)']),
+                scores: Object.freeze([
+                    [0.40,0.32,0.35,0.30,0.30,0.88],
+                    [0.85,0.35,0.30,0.40,0.40,0.30],
+                    [0.43,0.89,0.30,0.28,0.22,0.30],
+                    [0.30,0.25,0.48,0.85,0.45,0.40],
+                    [0.20,0.38,0.87,0.45,0.32,0.28],
+                    [0.34,0.31,0.38,0.40,0.92,0.28]
+                ])
+            }),
+            
+            // 汽车速度数据
+            carSpeed: Object.freeze({
+                speed: Object.freeze([10,20,30,40,50,60,70,80,90,100,110,120,130,140,150,160,170,180,190,200]),
+                distance: Object.freeze([0.5,2.0,4.4,7.9,12.3,17.7,24.1,31.5,39.9,49.2,59.5,70.8,83.1,96.4,110.7,126.0,142.2,159.4,177.6,196.8])
+            }),
+            
+            // 发电量数据
+            electricity: Object.freeze({
+                year2018: Object.freeze([5200,5254.5,5283.4,5107.8,5443.3,5550.6,6400.2,6404.9,5483.1,5330.2,5543,6199.9]),
+                year2017: Object.freeze([4605.2,4710.3,5168.9,4767.2,4947,5203,6047.4,5945.5,5219.6,5038.1,5196.3,5698.6])
+            }),
+            
+            // 生物量数据
+            biomass: Object.freeze({
+                seasons: Object.freeze(["春季","夏季","秋季"]),
+                species1: Object.freeze([2.04,1.57,1.63]),
+                species2: Object.freeze([1.69,1.61,1.64]),
+                species3: Object.freeze([4.65,4.99,4.94]),
+                species4: Object.freeze([3.39,2.33,4.10]),
+                errors: Object.freeze({
+                    species1: [0.16,0.08,0.10],
+                    species2: [0.27,0.14,0.14],
+                    species3: [0.34,0.32,0.29],
+                    species4: [0.23,0.23,0.39]
+                })
+            })
+        });
+
+        // 异步加载Plotly库
+        function loadPlotly() {
+            return new Promise((resolve, reject) => {
+                const script = document.createElement('script');
+                script.src = 'https://cdn.plot.ly/plotly-latest.min.js';
+                script.crossOrigin = 'anonymous';
+                script.onload = () => {
+                    window.performanceMark('plotly-loaded');
+                    resolve();
+                };
+                script.onerror = () => reject(new Error('Plotly加载失败'));
+                document.head.appendChild(script);
+            });
+        }
+
+        // 主初始化函数
+        async function initializeApp() {
+            try {
+                window.performanceMark('app-start');
+                
+                // 隐藏加载状态，显示主内容
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('main-content').style.display = 'block';
+                
+                // 异步加载Plotly
+                await loadPlotly();
+                window.performanceMark('plotly-ready');
+                
+                // 初始化所有图表
+                renderAllCharts();
+                
+                window.performanceMark('app-ready');
+                
+            } catch (error) {
+                window.handleError(error, 'initializeApp');
+            }
+        }
+
+        // 导航切换功能
+        function showSection(sectionId) {
+            try {
+                const validSections = ['section1','section2','section3','section4','section5'];
+                if (!validSections.includes(sectionId)) return;
+                
+                document.querySelectorAll('.chart-section').forEach(section => {
+                    section.style.display = 'none';
+                });
+                
+                const targetSection = document.getElementById(sectionId);
+                if (targetSection) {
+                    targetSection.style.display = 'block';
+                }
+                
+                document.querySelectorAll('.nav-btn').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                event.target.classList.add('active');
+                
+            } catch (error) {
+                window.handleError(error, 'showSection');
+            }
+        }
+
+        // 图表渲染函数
+        function renderAllCharts() {
+            try {
+                if (typeof Plotly === 'undefined') {
+                    throw new Error('Plotly库未加载');
+                }
+                
+                renderTemperatureChart();
+                renderLogisticsChart();
+                renderAlibabaChart();
+                renderShoppingChart();
+                renderAlipayChart();
+                renderHollandChart();
+                renderCarSpeedChart();
+                renderRandomScatterChart();
+                renderElectricityChart();
+                renderBiomassChart();
+                
+            } catch (error) {
+                window.handleError(error, 'renderAllCharts');
+            }
+        }
+
+        function renderTemperatureChart() {
+            const trace1 = {
+                x: secureData.temperature.days,
+                y: secureData.temperature.maxTemp,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: '最高气温',
+                line: { color: '#FF6B6B', width: 3 }
+            };
+            
+            const trace2 = {
+                x: secureData.temperature.days,
+                y: secureData.temperature.minTemp,
+                type: 'scatter',
+                mode: 'lines+markers',
+                name: '最低气温',
+                line: { color: '#4ECDC4', width: 3 }
+            };
+            
+            Plotly.newPlot('temperature-chart', [trace1, trace2], {
+                title: '未来15天气温变化趋势',
+                xaxis: { title: '天数' },
+                yaxis: { title: '温度(°C)' }
+            });
+        }
+
+        function renderLogisticsChart() {
+            const trace1 = {
+                x: secureData.logistics.months,
+                y: secureData.logistics.companyA,
+                type: 'scatter',
+                mode: 'lines',
+                name: '公司A',
+                stackgroup: 'one',
+                line: { color: '#FF9F1C' }
+            };
+            
+            const trace2 = {
+                x: secureData.logistics.months,
+                y: secureData.logistics.companyB,
+                type: 'scatter',
+                mode: 'lines',
+                name: '公司B',
+                stackgroup: 'one',
+                line: { color: '#2EC4B6' }
+            };
+            
+            const trace3 = {
+                x: secureData.logistics.months,
+                y: secureData.logistics.companyC,
+                type: 'scatter',
+                mode: 'lines',
+                name: '公司C',
+                stackgroup: 'one',
+                line: { color: '#E71D36' }
+            };
+            
+            Plotly.newPlot('logistics-chart', [trace1, trace2, trace3], {
+                title: '物流公司费用堆积面积图',
+                xaxis: { title: '月份' },
+                yaxis: { title: '费用(万元)' }
+            });
+        }
+
+        function renderAlibabaChart() {
+            const trace = {
+                x: secureData.alibaba.years,
+                y: secureData.alibaba.gmv,
+                type: 'bar',
+                marker: { color: '#FF6B6B' }
+            };
+            
+            Plotly.newPlot('alibaba-chart', [trace], {
+                title: '阿里巴巴淘宝和天猫平台GMV',
+                xaxis: { title: '财年' },
+                yaxis: { title: 'GMV(亿元)' }
+            });
+        }
+
+        function renderShoppingChart() {
+            const trace = {
+                y: secureData.shopping.categories,
+                x: secureData.shopping.rates,
+                type: 'bar',
+                orientation: 'h',
+                marker: { color: '#4ECDC4' }
+            };
+            
+            Plotly.newPlot('shopping-chart', [trace], {
+                title: '各商品种类网购替代率',
+                xaxis: { title: '替代率' },
+                margin: { l: 200 }
+            });
+        }
+
+        function renderAlipayChart() {
+            const trace = {
+                values: secureData.alipay.amounts,
+                labels: secureData.alipay.categories,
+                type: 'pie',
+                hole: 0.4
+            };
+            
+            Plotly.newPlot('alipay-chart', [trace], {
+                title: '支付宝月账单消费分布'
+            });
+        }
+
+        function renderHollandChart() {
+            const angles = [];
+            for (let i = 0; i < 6; i++) {
+                angles.push(i * 360 / 6);
+            }
+            angles.push(0); // 闭合图形
+            
+            const traces = [];
+            secureData.holland.scores.forEach((scores, index) => {
+                const data = [...scores, scores[0]]; // 闭合数据
+                traces.push({
+                    r: data,
+                    theta: angles,
+                    type: 'scatterpolar',
+                    fill: 'toself',
+                    name: `测试者 ${index + 1}`
+                });
+            });
+            
+            Plotly.newPlot('holland-chart', traces, {
+                title: '霍兰德职业兴趣测试雷达图',
+                polar: {
+                    radialaxis: {
+                        visible: true,
+                        range: [0, 1]
+                    }
+                }
+            });
+        }
+
+        function renderCarSpeedChart() {
+            const trace = {
+                x: secureData.carSpeed.speed,
+                y: secureData.carSpeed.distance,
+                type: 'scatter',
+                mode: 'markers',
+                marker: {
+                    size: 8,
+                    color: '#FF6B6B'
+                }
+            };
+            
+            Plotly.newPlot('car-speed-chart', [trace], {
+                title: '汽车速度与制动距离关系',
+                xaxis: { title: '速度(km/h)' },
+                yaxis: { title: '制动距离(m)' }
+            });
+        }
+
+        function renderRandomScatterChart() {
+            const x = [], y = [], sizes = [];
+            for (let i = 0; i < 50; i++) {
+                x.push(Math.random());
+                y.push(Math.random());
+                sizes.push(Math.random() * 100);
+            }
+            
+            const trace = {
+                x: x,
+                y: y,
+                mode: 'markers',
+                marker: {
+                    size: sizes,
+                    color: sizes,
+                    colorscale: 'Viridis',
+                    showscale: true
+                }
+            };
+            
+            Plotly.newPlot('random-scatter-chart', [trace], {
+                title: '随机数据气泡图'
+            });
+        }
+
+        function renderElectricityChart() {
+            const trace1 = {
+                y: secureData.electricity.year2018,
+                type: 'box',
+                name: '2018年',
+                boxpoints: 'all',
+                jitter: 0.3,
+                pointpos: -1.8
+            };
+            
+            const trace2 = {
+                y: secureData.electricity.year2017,
+                type: 'box',
+                name: '2017年',
+                boxpoints: 'all',
+                jitter: 0.3,
+                pointpos: -1.8
+            };
+            
+            Plotly.newPlot('electricity-chart', [trace1, trace2], {
+                title: '2017-2018年全国发电量箱形图对比',
+                yaxis: { title: '发电量(亿千瓦时)' }
+            });
+        }
+
+        function renderBiomassChart() {
+            const traces = [];
+            const seasons = secureData.biomass.seasons;
+            
+            // 树种1
+            traces.push({
+                x: seasons,
+                y: secureData.biomass.species1,
+                type: 'bar',
+                name: '树种1',
+                error_y: {
+                    type: 'data',
+                    array: secureData.biomass.errors.species1,
+                    visible: true
+                }
+            });
+            
+            // 树种2
+            traces.push({
+                x: seasons,
+                y: secureData.biomass.species2,
+                type: 'bar',
+                name: '树种2',
+                error_y: {
+                    type: 'data',
+                    array: secureData.biomass.errors.species2,
+                    visible: true
+                }
+            });
+            
+            // 树种3
+            traces.push({
+                x: seasons,
+                y: secureData.biomass.species3,
+                type: 'bar',
+                name: '树种3',
+                error_y: {
+                    type: 'data',
+                    array: secureData.biomass.errors.species3,
+                    visible: true
+                }
+            });
+            
+            // 树种4
+            traces.push({
+                x: seasons,
+                y: secureData.biomass.species4,
+                type: 'bar',
+                name: '树种4',
+                error_y: {
+                    type: 'data',
+                    array: secureData.biomass.errors.species4,
+                    visible: true
+                }
+            });
+            
+            Plotly.newPlot('biomass-chart', traces, {
+                title: '4个树种不同季节的细根生物量',
+                yaxis: { title: '生物量(g)' },
+                barmode: 'group'
+            });
+        }
+
+        // 页面加载完成后初始化
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initializeApp);
+        } else {
+            initializeApp();
+        }
+    </script>
+</body>
+</html>
